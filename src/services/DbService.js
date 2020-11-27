@@ -44,6 +44,32 @@ class DbService {
     });
   }
 
+  getAllBusStop() {
+    return busstopDb.then(db => {
+      return db.getAll('busStopCodeIndex');
+    });
+  }
+
+  getBusStop(busStopCode) {
+    return busstopDb.then(db => {
+      return db.get('busStopCodeIndex', busStopCode);
+    })
+  }
+
+  getBusStopLatBound(minLat, maxLat) {
+    const latRange = IDBKeyRange.bound(minLat, maxLat);
+    return busstopDb.then(db => {
+      return db.getAllFromIndex('busStopCodeIndex', 'by-lat', latRange);
+    });
+  }
+
+  getBusStopLngBound(minLng, maxLng) {
+    const LngRange = IDBKeyRange.bound(minLng, maxLng);
+    return busstopDb.then(db => {
+      return db.getAllFromIndex('busStopCodeIndex', 'by-long', LngRange);      
+    });
+  }
+
   putAllBuses(buses) {
     return busesDb.then(db => {
       const tx = db.transaction('serviceNoIndex', 'readwrite');
@@ -54,6 +80,18 @@ class DbService {
       return Promise.all(transactions);
     }).catch(e => {
       console.log(e);
+    })
+  }
+
+  getAllBuses() {
+    return busesDb.then(db => {
+      return db.getAll('serviceNoIndex');
+    });
+  }
+
+  getBus(serviceNo) {
+    return busesDb.then(db => {
+      return db.get('serviceNoIndex', serviceNo);
     })
   }
 
