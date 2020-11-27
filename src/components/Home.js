@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ArrivalService from "../services/ArrivalService";
 import { Service } from "../services/DbService";
-import { getBoundsOfDistance, computeDestinationPoint, MAXLON } from 'geolib';
+import { getBoundsOfDistance } from "geolib";
 
 const Home = () => {
   const [busStopCode, setBusStopCode] = useState("");
@@ -9,8 +9,8 @@ const Home = () => {
     lat: 0,
     lng: 0
   });
-  const [nearestBusStops, setNearestBusStops] = useState([]);
-  const [busStopArrival, setBusStopArrival] = useState([]);
+  const [nearestBusStops, setNearestBusStops] = useState({});
+  const [busStopArrival, setBusStopArrival] = useState({});
 
   useEffect(() => {
     const updateNearestBusStops = async() => {
@@ -24,51 +24,59 @@ const Home = () => {
       const abc = getBoundsOfDistance(
         { lat: lat, lng: lng}, 300
       );
-
       const minLat = abc[0].latitude;
       const minLng = abc[0].longitude;
-
-      console.log(minLat + ", " + minLng);
-
       const maxLat = abc[1].latitude;
       const maxLng = abc[1].longitude;
 
-      console.log(maxLat + ", " + maxLng);
-
       const latBusStops = await Service.getBusStopLatBound(minLat, maxLat);
-      console.log(latBusStops);
       const busStops = latBusStops.filter(latBusStop => {
         return latBusStop.Longitude < maxLng && latBusStop.Longitude > minLng;
       });
-      //const lngBusStops = await Service.getBusStopLngBound(minLng, maxLng);
-      //console.log(lngBusStops);
-      // const busStops = latBusStops.filter(latBusStop => {
-      //   return lngBusStops.some(lngBusStop => lngBusStop.BusStopCode === latBusStop.BusStopCode);
-      // });
-      setNearestBusStops(busStops);
+      var dict = {};
+      busStops.forEach(stop => {
+        dict[stop.BusStopCode] = stop;
+      });
       console.log(busStops);
+
+      setNearestBusStops(dict);
     }
     updateNearestBusStops();
   }, [coord])
+
+  useEffect(() => {
+    const updateArrivals = async () => {
+      const stops = Object.keys(nearestBusStops);
+      const responses = await ArrivalService.getAll(stops);
+      responses.map((response, index) => {
+        setBusStopArrival(prevBusArrival => ({
+          ...prevBusArrival, 
+          [stops[index]]: response.data.services
+        }))
+      });
+    }
+    updateArrivals();
+  }, [nearestBusStops]);
 
   const onChangeBusStopCode = e => {
     const code = e.target.value;
     setBusStopCode(code);
   }
 
-  const arrivalById = () => {
+  const arrivalById = async () => {
     if (busStopCode.length !== 5 || !Number(busStopCode)) {
       alert("Invalid busstop code");
       return;
     }
 
-    ArrivalService.get(busStopCode)
-      .then(response => {
-        setBusStopArrival(response.data.services);
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    const busStop = await Service.getBusStop(busStopCode);
+    var dict = {};
+    dict[busStopCode] = busStop;
+    console.log(dict);
+    setNearestBusStops(dict);
+
+    const response = await ArrivalService.get(busStopCode);
+    setBusStopArrival({ busStopCode:response.data.services});
   }
 
   const getCoord = () => {
@@ -108,23 +116,40 @@ const Home = () => {
     <br/>
 
     <>
-      {busStopArrival.map((service, index) =>(
-        <div key={index}>
-        <h3>{service.ServiceNo}</h3>
-        <ul>
-          <li key={index.toString() + "1"}>
-            {service.NextBus.EstimatedArrival}
-          </li>
-          <li key={index.toString() + "2"}>
-            {service.NextBus2.EstimatedArrival}
-          </li>
-          <li key={index.toString() + "3"}>
-            {service.NextBus3.EstimatedArrival}
-          </li>
-        </ul>
+      {busStopArrival && Object.keys(busStopArrival).map((key, index) =>(
+        <div key={key}>
+        {nearestBusStops[key] &&
+        (
+          <h2>{nearestBusStops[key].Description} - {nearestBusStops[key].RoadName} ({nearestBusStops[key].BusStopCode})</h2>
+        )
+        }
+        {nearestBusStops[key] && busStopArrival[key].map((service, index) => (
+          <div key={service.ServiceNo + key}>
+            <h3>{service.ServiceNo}</h3>
+            <ul>
+              {service.NextBus.EstimatedArrival &&
+                <li key={index.toString() + "1"}>
+                  {service.NextBus.EstimatedArrival}
+                </li>
+              }
+              {service.NextBus2.EstimatedArrival &&
+                <li key={index.toString() + "2"}>
+                  {service.NextBus2.EstimatedArrival}
+                </li>
+              }
+              {service.NextBus3.EstimatedArrival &&
+                <li key={index.toString() + "3"}>
+                  {service.NextBus3.EstimatedArrival}
+                </li>
+              }
+            </ul>
+          </div>
+        ))}
         </div>
       ))}
     </>
+
+    <br/>
 
     </>
   )
