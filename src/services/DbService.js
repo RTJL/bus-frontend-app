@@ -31,6 +31,13 @@ const busesDb = openDB(BUSES_DB_NAME, BUSES_DB_VERSION, {
 });
 
 class DbService {
+  getBusStopCount() {
+    return busstopDb.then(db => {
+      const tx = db.transaction('busStopCodeIndex', 'readonly');
+      return tx.objectStore('busStopCodeIndex').count();
+    });
+  }
+
   putAllBusStop(busStops) {
     return busstopDb.then(db => {
       const tx = db.transaction('busStopCodeIndex', 'readwrite');
