@@ -39,4 +39,4 @@ jobs:
       with:
         folder: build
         bucket: ${{ env.website_bucket_name }}
-        bucket_region: ap-southeast-1
+        bucket-region: ap-southeast-1
