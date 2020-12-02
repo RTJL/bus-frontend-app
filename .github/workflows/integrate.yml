@@ -1,0 +1,28 @@
+name: Integrate
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - dev
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Extract STAGE
+      run: echo "STAGE=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+    - name: Rename STAGE to prod if master branch
+      if: env.STAGE == 'master'
+      shell: bash
+      run: echo "STAGE=prod" >> $GITHUB_ENV
+    - name: Debug
+      run: echo ${{ env.STAGE }}
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+    - name: Install packages
+      run: npm install
+    - name: Build site
+      run: "npm run build:${{env.STAGE}}"
