@@ -17,8 +17,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: Extract STAGE
-      run: echo "STAGE=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+    - name: Get Branch
+      run: |
+        raw=$(git branch -r --contains ${{ github.ref }})
+        branch=${raw##*/}
+        echo "STAGE=$branch" >> $GITHUB_ENV
     - name: Rename STAGE to prod if master branch
       if: env.STAGE == 'master'
       shell: bash
