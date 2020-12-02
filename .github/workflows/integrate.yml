@@ -3,9 +3,9 @@ name: Integrate
 on:
   push:
     branches:
-      - master
-      - staging
-      - dev
+      - "!*"
+    tags:
+      - "v*"
 
 jobs:
   deploy-dev:
