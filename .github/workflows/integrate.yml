@@ -43,3 +43,5 @@ jobs:
         folder: build
         bucket: ${{ env.website_bucket_name }}
         bucket-region: ap-southeast-1
+        invalidation: /
+        delete-removed: true

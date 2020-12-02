@@ -212,7 +212,7 @@ const Home = () => {
                 {nearestBusStops[key] && busStopArrival[key].map((service, index) => (
                   <ListItem disableGutters={true} key={service.ServiceNo}>
                     <Box>
-                      <h3>{service.ServiceNo}</h3>
+                      <h3 xs={12}>{service.ServiceNo}</h3>
                       <Grid container spacing={1}>
                         {service.NextBus.EstimatedArrival &&
                           <Grid item key={index.toString() + "1"} xs={4}>
@@ -235,8 +235,7 @@ const Home = () => {
                             size="large"
                             startIcon={<DirectionsBusIcon />}
                           >
-                            {Math.round((((new Date() - Date.parse(service.NextBus2.EstimatedArrival)) % 86400000) % 3600000) / 60000)}
-                            {}
+                            {Math.round((((Date.parse(service.NextBus2.EstimatedArrival) - new Date()) % 86400000) % 3600000) / 60000)}
                           </Button>
                           </Grid>
                         }
