@@ -26,3 +26,17 @@ jobs:
       run: npm install
     - name: Build site
       run: "npm run build:${{env.STAGE}}"
+    - name: Retrieve bucket name
+      uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-southeast-1
+      with:
+        ssm-path: /bus-backend-infra/${{ env.STAGE }}/s3/website_bucket_name
+    - name: Deploy
+      uses: reggionick/s3-deploy@v3
+      with:
+        folder: build
+        bucket: ${{ website_bucket_name }}
+        bucket_region: ap-southeast-1
