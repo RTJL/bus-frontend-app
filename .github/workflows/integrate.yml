@@ -1,0 +1,47 @@
+name: Integrate
+
+on:
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "v*"
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Extract STAGE
+      run: echo "STAGE=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+    - name: Rename STAGE to prod if master branch
+      if: env.STAGE == 'master'
+      shell: bash
+      run: echo "STAGE=prod" >> $GITHUB_ENV
+    - name: Debug
+      run: echo ${{ env.STAGE }}
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+    - name: Install packages
+      run: npm install
+    - name: Build site
+      run: "npm run build:${{env.STAGE}}"
+    - name: Retrieve bucket name
+      uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ap-southeast-1
+      with:
+        ssm-path: /bus-backend-infra/${{ env.STAGE }}/s3/website_bucket_name
+    - name: Deploy
+      uses: reggionick/s3-deploy@v3
+      with:
+        folder: build
+        bucket: ${{ env.website_bucket_name }}
+        bucket-region: ap-southeast-1
+        invalidation: '/*'
+        delete-removed: true

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import BusesDataService from "../services/BusesService";
+import { Service } from "../services/DbService";
 
 const BusesList = () => {
   const [buses, setBuses] = useState([]);
 
   useEffect(() => {
-    retrieveBuses();
+    const fetchData = async() => {
+      const response = await BusesDataService.getAll();
+      await updateBusDb(response.data.buses);
+      setBuses(response.data.buses);
+    }
+
+    fetchData();
   }, []);
 
-  const retrieveBuses = () => {
-    BusesDataService.getAll()
-      .then(response => {
-        setBuses(response.data.buses);
-        console.log(response.data.buses);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
+  const updateBusDb = (buses) => {
+    Service.putAllBuses(buses)
+  }
 
   return (
     <>
