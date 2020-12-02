@@ -38,5 +38,5 @@ jobs:
       uses: reggionick/s3-deploy@v3
       with:
         folder: build
-        bucket: ${{ website_bucket_name }}
+        bucket: ${{ env.website_bucket_name }}
         bucket_region: ap-southeast-1
