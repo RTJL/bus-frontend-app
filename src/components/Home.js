@@ -120,6 +120,7 @@ const Home = () => {
         msg = "The request to get user location timed out."
         break;
       case error.UNKNOWN_ERROR:
+      default:
         msg = "An unknown error occurred."
         break;
     }

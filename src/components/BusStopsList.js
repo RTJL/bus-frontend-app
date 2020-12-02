@@ -5,7 +5,6 @@ import { Service } from "../services/DbService";
 const BusStopsList = () => {
   const [busStops, setBusStops] = useState([]);
   const [currentBusStop, setCurrentBusStop] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +22,6 @@ const BusStopsList = () => {
 
   const setActiveBusStop = (busStop, index) => {
     setCurrentBusStop(busStop);
-    setCurrentIndex(index);
   };
 
   return (

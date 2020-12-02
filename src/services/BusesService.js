@@ -12,7 +12,9 @@ const updateCache = () => {
     });
 }
 
-export default {
+const BusesService = {
   getAll,
   updateCache
 };
+
+export default BusesService;

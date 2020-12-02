@@ -12,7 +12,9 @@ const getAll = idList => {
   return axios.all(requests);
 }
 
-export default {
+const ArrivalService = {
   get,
   getAll
 };
+
+export default ArrivalService;
