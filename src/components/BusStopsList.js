@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react";
 import BusStopsService from "../services/BusStopsService";
+import { Service } from "../services/DbService";
 
 const BusStopsList = () => {
   const [busStops, setBusStops] = useState([]);
   const [currentBusStop, setCurrentBusStop] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
-    retrieveBusStops();
+    const fetchData = async () => {
+      const response = await BusStopsService.getAll();
+      await updateDb(response.data.busStops);
+      setBusStops(response.data.busStops);
+    }
+    
+    fetchData();
   }, []);
 
-  const retrieveBusStops = () => {
-    BusStopsService.getAll()
-      .then(response => {
-        setBusStops(response.data.busStops);
-        console.log(response.data.busStops);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
+  const updateDb = (busStops) => {
+    Service.putAllBusStop(busStops);
+  }
 
   const setActiveBusStop = (busStop, index) => {
     setCurrentBusStop(busStop);
-    setCurrentIndex(index);
   };
 
   return (
