@@ -1,6 +1,8 @@
 # Bus Arrival Frontend App
 A progressive web app (PWA) that shows bus arrival information. Built using React and deployed to AWS S3 bucket + Cloudfront.
 
+[![YourActionName Actions Status](https://github.com/RTJL/bus-frontend-app/workflows/Integrate/badge.svg)](https://github.com/RTJL/bus-frontend-app/actions)
+
 ## Getting started
 - Setup local dev env
 - Run local dev server
