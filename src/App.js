@@ -1,9 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import BusList from "./components/BusList";
-import Search from './components/Search';
-import HomePage from './containers.js/HomePage';
+import HomePage from './containers/HomePage';
 import { Switch, Route } from 'react-router-dom';
 
 function App() {
