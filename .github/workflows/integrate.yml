@@ -15,8 +15,13 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
     - uses: actions/checkout@v2
-    - name: Extract STAGE
-      run: echo "STAGE=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+      with:
+        fetch-depth: 0
+    - name: Get Branch
+      run: |
+        raw=$(git branch -r --contains ${{ github.ref }})
+        branch=${raw##*/}
+        echo "STAGE=$branch" >> $GITHUB_ENV
     - name: Rename STAGE to prod if master branch
       if: env.STAGE == 'master'
       shell: bash
