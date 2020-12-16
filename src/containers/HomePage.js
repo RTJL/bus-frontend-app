@@ -31,11 +31,13 @@ const HomePage = () => {
   }, [])
 
   const onChangeSearchText = async (e, v) => {
-    console.log(v);
+    let busStop = undefined;
     if (v){
-      const busStop = await Service.getBusStop(v);
+      busStop = await Service.getBusStop(v);
+    }
+    if (busStop !== undefined) {
       setNearestBusStops([busStop]);
-    } else if (!v) {
+    } else {
       setNearestBusStops([]);
     }
   }
