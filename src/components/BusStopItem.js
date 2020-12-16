@@ -16,6 +16,7 @@ import ArrivalService from "../services/ArrivalService";
 const BusStopItem = ({ busStop }) => {
   const [services, setServices] = useState([]);
   const [isCollapse, setIsCollapse] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleBusStop = () => {
     const originalIsCollpase = isCollapse;
@@ -33,8 +34,10 @@ const BusStopItem = ({ busStop }) => {
 
   const reloadServices = async() => {
     setServices([]);
+    await setIsLoading(true);
     const response = await ArrivalService.get(busStop.BusStopCode);
     setServices(response.data.services);
+    await setIsLoading(false);
   }
 
   return (
@@ -50,7 +53,7 @@ const BusStopItem = ({ busStop }) => {
         action={
           <>
           {isCollapse ? 
-          services.length === 0 ?
+          isLoading ?
           <IconButton><CircularProgress disableShrink /></IconButton> : 
           <IconButton onClick={onClickReload}><CachedIcon/></IconButton>
           : <></>}
@@ -61,7 +64,7 @@ const BusStopItem = ({ busStop }) => {
       />
         <Collapse in={isCollapse}>
           {
-            services.length === 0 ? <Loading/> : <BusList services={services}/>
+            isLoading ? <Loading/> : <BusList services={services}/>
           }
         </Collapse>
     </Card>
