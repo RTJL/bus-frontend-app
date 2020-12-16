@@ -30,7 +30,7 @@ A progressive web app (PWA) that shows bus arrival information. Built using Reac
 
   Start local dev server
     
-  `npm start`
+    `npm start`
 
 ### Deployment
 
