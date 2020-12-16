@@ -25,6 +25,16 @@ A progressive web app (PWA) that shows bus arrival information. Built using Reac
 
 ### Run local dev server
 
-Start local dev server
+  Start local dev server
     
     `npm start`
+
+### Deployment
+
+  Create and push tags (vX.X.X)
+
+  Example
+
+  `git tag v0.1.0`
+
+  `git push origin --tags`
