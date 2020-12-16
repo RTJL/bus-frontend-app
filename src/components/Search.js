@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/Button';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 const Search = ({ toggleClear, allBusStops, onChangeSearchText, onClickLocation }) => {
@@ -29,10 +28,10 @@ const Search = ({ toggleClear, allBusStops, onChangeSearchText, onClickLocation 
             )}
           />
         </Grid>
-        <Grid item xs={2}>
-          <IconButton onClick={onClickLocation}>
+        <Grid item xs={2} align="center">
+          <div onClick={onClickLocation}>
             <LocationOnIcon/>
-          </IconButton>
+          </div>
         </Grid>
 
       </Grid>
