@@ -1,5 +1,3 @@
-import Grid from '@material-ui/core/Grid';
-
 import loading0 from "../static/img/loading0.gif";
 import loading1 from "../static/img/loading1.gif";
 import loading2 from "../static/img/loading2.gif";
