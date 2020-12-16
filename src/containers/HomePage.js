@@ -3,12 +3,32 @@ import { getBoundsOfDistance, getDistance } from "geolib";
 
 import Search from "../components/Search";
 import BusStopList from "../components/BusStopList";
+import BusStopsService from "../services/BusStopsService";
+import BusesDataService from "../services/BusesService";
 import { Service } from "../services/DbService";
 
 const HomePage = () => {
   const [toggleClear, setToggleClear] = useState(false);
   const [allBusStops, setAllBusStops] = useState([]);
   const [nearestBusStops, setNearestBusStops] = useState([]);
+  const [isUpdatingCache, setIsUpdatingCache] = useState(true);
+
+  useEffect(() => {
+    const checkAndUpdateCache = async() => {
+      const noOfBusStop = await Service.getBusStopCount();
+      var requests = [];
+      if (noOfBusStop === 0) {
+        requests.push(BusStopsService.updateCache());
+        requests.push(BusesDataService.updateCache());
+      }
+      Promise.all(requests)
+        .then(() => {
+          console.log("udpated cache");
+          setIsUpdatingCache(false);
+        });
+    }
+    checkAndUpdateCache();
+  }, [])
 
   const onChangeSearchText = async (e, v) => {
     console.log(v);
@@ -49,13 +69,16 @@ const HomePage = () => {
   );
 
   useEffect(() => {
+    navigator.geolocation.getCurrentPosition(updateCoord, coordError);
+  }, [updateCoord])
+
+  useEffect(() => {
     const getAllBusStop = async() => {
       const busStopList = await Service.getAllBusStop();
       setAllBusStops(busStopList);
     }
-    navigator.geolocation.getCurrentPosition(updateCoord, coordError);
     getAllBusStop();
-  }, [updateCoord])
+  }, [isUpdatingCache])
 
   const updateNearestBusStops = async (bounds) => {
     const minLat = bounds[0].latitude;
@@ -102,6 +125,14 @@ const HomePage = () => {
 
   return (
     <>
+    { isUpdatingCache ? (
+    <>
+    <p>Checking for new buses and stops</p>
+    </>
+    )
+    :
+    (
+    <>
     <Search
       toggleClear={toggleClear}
       allBusStops={allBusStops}
@@ -109,6 +140,9 @@ const HomePage = () => {
       onClickLocation={onClickLocation}
     />
     <BusStopList nearestBusStops={nearestBusStops}/>
+    </>
+    )
+    }
     </>
   )
 }
