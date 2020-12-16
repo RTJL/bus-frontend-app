@@ -4,7 +4,6 @@ A progressive web app (PWA) that shows bus arrival information. Built using Reac
 ## Getting started
 - Setup local dev env
 - Run local dev server
-- Deployment
 
 ### Setup local dev env
 
@@ -28,7 +27,7 @@ A progressive web app (PWA) that shows bus arrival information. Built using Reac
 
   Start local dev server
     
-  `npm start`
+    `npm start`
 
 ### Deployment
 
