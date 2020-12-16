@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getBoundsOfDistance, getDistance } from "geolib";
 
 import Search from "../components/Search";
@@ -26,6 +26,28 @@ const HomePage = () => {
     setToggleClear(!toggleClear);
   }
 
+  const updateCoord = useCallback(
+    async (position) => {
+      // const lat = 1.421202;
+      // const lng = 103.833704;
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const currentLatLng = { lat: lat, lng: lng};
+  
+      if (lat === 0 || lng === 0) {
+        return;
+      }
+  
+      const bounds = getBoundsOfDistance(
+        currentLatLng, 300
+      );
+  
+      const busStops = await updateNearestBusStops(bounds);
+      const sorted = sortBusStops(currentLatLng, busStops);
+      setNearestBusStops(sorted);
+    },[],
+  );
+
   useEffect(() => {
     const getAllBusStop = async() => {
       const busStopList = await Service.getAllBusStop();
@@ -33,27 +55,7 @@ const HomePage = () => {
     }
     navigator.geolocation.getCurrentPosition(updateCoord, coordError);
     getAllBusStop();
-  }, [])
-
-  const updateCoord = async (position) => {
-    // const lat = 1.421202;
-    // const lng = 103.833704;
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-    const currentLatLng = { lat: lat, lng: lng};
-
-    if (lat === 0 || lng === 0) {
-      return;
-    }
-
-    const bounds = getBoundsOfDistance(
-      currentLatLng, 300
-    );
-
-    const busStops = await updateNearestBusStops(bounds);
-    const sorted = sortBusStops(currentLatLng, busStops);
-    setNearestBusStops(sorted);
-  }
+  }, [updateCoord])
 
   const updateNearestBusStops = async (bounds) => {
     const minLat = bounds[0].latitude;
